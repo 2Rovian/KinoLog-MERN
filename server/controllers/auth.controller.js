@@ -18,7 +18,9 @@ export const handleRegister = async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, saltBcrypt)
 
         const newUser = await User.create({ username, email, password: hashedPassword })
+
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN })
+        res.cookie('auth-cookie', token, { maxAge: 900000, httpOnly: true })
 
         res.status(201).json({
             msg: "Usuário criado com sucesso",
@@ -56,6 +58,7 @@ export const handleLogin = async (req, res) => {
         }
 
         const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN })
+        res.cookie('auth-cookie', token, { maxAge: 900000, httpOnly: true })
 
         res.status(200).json({
             msg: "Usuário logado com sucesso",
@@ -69,5 +72,11 @@ export const handleLogin = async (req, res) => {
     }
 }
 
-const handleLogout = () => { }
+export const handleLogout = (req, res) => {
+    res.clearCookie("auth-cookie", {
+        httpOnly: true,
+        sameSite: "strict",
+    });
+    res.status(200).json({ msg: "Logout realizado com sucesso" });
+}
 
