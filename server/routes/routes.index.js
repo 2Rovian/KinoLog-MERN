@@ -1,15 +1,19 @@
 import { Router } from "express";
+import { User } from "../models/user.model.js";
+import mongoose from "mongoose";
+import bcrypt from "bcrypt"
+import jwt from "jsonwebtoken"
+import { handleLogin, handleRegister } from "../controllers/auth.controller.js";
+import { handleGetAllUsers, handleGetUser } from "../controllers/crud.controller.js";
 
 const router = Router();
 
-router.post("/api/auht/register", (req, res) => {
-    const { username, email, password } = req.body;
+router.get("/api/users", handleGetAllUsers)
 
-    
-})
+router.get("/api/users/:_id", handleGetUser)
 
-router.post("/api/auht/login", (req, res) => {
-    
-})
+router.post("/api/auth/register", handleRegister)
+
+router.post("/api/auth/login", handleLogin)
 
 export default router;
