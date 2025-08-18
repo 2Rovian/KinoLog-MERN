@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import toast from "react-hot-toast";
 import useFormValidation from "../hooks/useFormValidation";
+import useAuth from "../hooks/useAuth";
 
 function Login() {
 
@@ -13,14 +13,19 @@ function Login() {
   const [isLogin, setIsLogin] = useState<boolean>(true);
 
   const { handleFormValidation } = useFormValidation();
+  const { handleLogin, handleRegister } = useAuth();
 
   const handleSubmitForm = (e: React.FormEvent) => {
     e.preventDefault()
 
-    const validated = handleFormValidation({isLogin, password, confirmPassword, credential, email, username})
+    const validated = handleFormValidation({ isLogin, password, confirmPassword, credential, email, username })
     if (!validated) return;
 
-    toast.success("Form submitado")
+    if(isLogin){
+      handleLogin({credential, password});
+    } else{
+      handleRegister({username, email, password})
+    }
   }
 
   return (
@@ -100,7 +105,14 @@ function Login() {
         <p className="text-sm text-gray-400 text-center mt-6">
           {isLogin ? "Don’t have an account?" : "Already have an account?"}
           <span className="text-[#60519b] ml-1 hover:underline cursor-pointer"
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setCredential("");
+              setEmail("");
+              setUsername("");
+              setPassword("");
+              setConfirmPassword("");
+            }}
           >{isLogin ? "Sign up" : "Sign in"}</span>
 
         </p>
