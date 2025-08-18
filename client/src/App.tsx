@@ -3,6 +3,7 @@ import Home from './pages/Home'
 import Layout from './Layout'
 import ProtectedRoutes from './utils/ProtectedRoutes'
 import Login from './pages/Login'
+import { Toaster } from 'react-hot-toast'
 
 function App() {
 
@@ -20,7 +21,9 @@ function App() {
 
           </Route>
 
+          
         </Routes>
+        <Toaster position='bottom-right'/>
       </BrowserRouter>
     </>
   )
