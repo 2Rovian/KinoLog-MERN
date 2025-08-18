@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
+import type { FormValidationProps } from "../types/FormTypes";
 
 function Login() {
 
@@ -7,16 +8,60 @@ function Login() {
   const [username, setUsername] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [confirmPassword, setConfirmPassword] = useState<string>("");
+
   const [isLogin, setIsLogin] = useState<boolean>(true);
+
+  const handleFormValidation = (data: FormValidationProps) => {
+
+    if (data.type == "login") {
+      if (!data.credential || !data.password) {
+        toast.error("Preencha todos os campos")
+        return null
+      }
+
+      const cleanCredential = data.credential?.trim()
+      const cleanPassword = data.password?.trim()
+
+      return { cleanCredential, cleanPassword }
+    } else {
+      if (!data.username || !data.password || !data.confirmPassword) {
+        toast.error("Preencha todos os campos")
+        return null
+      }
+      const cleanUsername = data.username?.trim()
+      const cleanEmail = data.email?.trim()
+      const cleanPassword = data.password?.trim()
+      const cleanConfirmPassword = data.confirmPassword?.trim()
+
+      if (data.password !== data.confirmPassword) {
+        toast.error("As senhas não são iguais")
+        return null
+      }
+      return {
+        cleanUsername, cleanEmail, cleanPassword, cleanConfirmPassword
+      }
+    }
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    toast.success("form submitado")
+
+    const data: FormValidationProps = isLogin ?
+      { type: 'login', credential, password }
+      :
+      { type: 'register', username, email, password, confirmPassword }
+
+    const validated = handleFormValidation(data)
+
+    if (validated) {
+      toast.success("form submitado")
+    } 
   }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-[#1e202c]">
-      <div className="w-full max-w-md p-8 bg-[#31323e] rounded-2xl shadow-lg">
+      <div className="w-full max-w-xl p-8 bg-[#31323e] rounded-2xl shadow-lg">
         <h1 className="text-2xl font-bold text-center text-white mb-6">{isLogin ? "Welcome back!" : "Create your account"}</h1>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
@@ -48,7 +93,7 @@ function Login() {
           {!isLogin && <div>
             <label className="text-sm text-gray-300 mb-1 flex justify-between"><span>Email</span> <span className="opacity-40"> ( optional )</span></label>
             <input
-              type="password"
+              type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full px-4 py-2 rounded-lg bg-[#1e202c] text-white border border-transparent focus:outline-[#60519b] focus:outline-2"
@@ -72,8 +117,8 @@ function Login() {
             <label className="block text-sm text-gray-300 mb-1">Confirm Password</label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               className="w-full px-4 py-2 rounded-lg bg-[#1e202c] text-white border border-transparent focus:outline-[#60519b] focus:outline-2"
               placeholder="•••••••••••"
             />
@@ -84,7 +129,7 @@ function Login() {
             type="submit"
             className="w-full py-2 bg-[#60519b] text-white font-semibold rounded-lg shadow-md hover:bg-[#4e3f84] transition"
           >
-            Sign In
+            {isLogin ? "Sign In" : "Sign Up"}
           </button>
         </form>
 
