@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import toast from "react-hot-toast";
-import type { FormValidationProps } from "../types/FormTypes";
+import useFormValidation from "../hooks/useFormValidation";
 
 function Login() {
 
@@ -12,51 +12,15 @@ function Login() {
 
   const [isLogin, setIsLogin] = useState<boolean>(true);
 
-  const handleFormValidation = (data: FormValidationProps) => {
+  const { handleFormValidation } = useFormValidation();
 
-    if (data.type == "login") {
-      if (!data.credential || !data.password) {
-        toast.error("Preencha todos os campos")
-        return null
-      }
-
-      const cleanCredential = data.credential?.trim()
-      const cleanPassword = data.password?.trim()
-
-      return { cleanCredential, cleanPassword }
-    } else {
-      if (!data.username || !data.password || !data.confirmPassword) {
-        toast.error("Preencha todos os campos")
-        return null
-      }
-      const cleanUsername = data.username?.trim()
-      const cleanEmail = data.email?.trim()
-      const cleanPassword = data.password?.trim()
-      const cleanConfirmPassword = data.confirmPassword?.trim()
-
-      if (data.password !== data.confirmPassword) {
-        toast.error("As senhas não são iguais")
-        return null
-      }
-      return {
-        cleanUsername, cleanEmail, cleanPassword, cleanConfirmPassword
-      }
-    }
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmitForm = (e: React.FormEvent) => {
     e.preventDefault()
 
-    const data: FormValidationProps = isLogin ?
-      { type: 'login', credential, password }
-      :
-      { type: 'register', username, email, password, confirmPassword }
+    const validated = handleFormValidation({isLogin, password, confirmPassword, credential, email, username})
+    if (!validated) return;
 
-    const validated = handleFormValidation(data)
-
-    if (validated) {
-      toast.success("form submitado")
-    } 
+    toast.success("Form submitado")
   }
 
   return (
@@ -64,7 +28,7 @@ function Login() {
       <div className="w-full max-w-xl p-8 bg-[#31323e] rounded-2xl shadow-lg">
         <h1 className="text-2xl font-bold text-center text-white mb-6">{isLogin ? "Welcome back!" : "Create your account"}</h1>
 
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4" onSubmit={handleSubmitForm}>
           <div>
             {isLogin ?
               <>

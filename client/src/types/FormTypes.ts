@@ -1,15 +1,8 @@
-export interface LoginValidationProps {
-    type: "login",
-    credential: string,
-    password: string,
-}
-
-export interface RegisterValidationProps {
-    type: "register",
-    username: string,
+export interface FormValidationProps {
+    isLogin: boolean,
+    credential?: string,
+    username?: string,
     email?: string,
     password: string,
-    confirmPassword: string,
+    confirmPassword?: string,
 }
-
-export type FormValidationProps = LoginValidationProps | RegisterValidationProps;
