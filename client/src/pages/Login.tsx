@@ -37,7 +37,7 @@ function Login() {
           <div>
             {isLogin ?
               <>
-                <label className="block text-sm text-gray-300 mb-1">Username or Email</label>
+                <label className="block text-sm text-gray-300 mb-1">Email or Username</label>
                 <input
                   type="text"
                   value={credential}

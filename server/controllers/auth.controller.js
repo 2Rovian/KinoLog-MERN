@@ -17,7 +17,13 @@ export const handleRegister = async (req, res) => {
         const saltBcrypt = await bcrypt.genSalt(12)
         const hashedPassword = await bcrypt.hash(password, saltBcrypt)
 
-        const newUser = await User.create({ username, email, password: hashedPassword })
+        const userData = { username, password: hashedPassword }
+        
+        if (email && email.trim() !== "") {
+            userData.email = email;
+        }
+
+        const newUser = await User.create(userData);
 
         const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN })
         res.cookie('auth-cookie', token, { maxAge: 900000, httpOnly: true })
@@ -40,8 +46,8 @@ export const handleRegister = async (req, res) => {
 export const handleLogin = async (req, res) => {
 
     try {
-        const { username, password } = req.body;
-        const user = await User.findOne({ username })
+        const { username, email, password } = req.body;
+        const user = await User.findOne({ credential: username == "" ? email : username})
 
         if (!user) {
             const error = new Error("User not found")
